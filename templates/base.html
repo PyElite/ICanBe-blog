@@ -247,6 +247,7 @@
             <!--登录-->
             <!--目前登录功能只有注册登录其它没必要没做-->
             <div class="pull-right">
+                <!--TODO 登录改为弹出框-->
                 {% if request.session.username|default:'' == '' %}
                         <i class="fa fa-power-off"></i>
                         <a href="{% url 'accounts:login' %}?next={{ request.path }}">登录</a>
