@@ -97,6 +97,7 @@
     <link rel='stylesheet' id='l2h_print_style-css' href='{% static 'css/print.min.css' %}' type='text/css' media='print'/>
     <link rel='stylesheet' id='style-css' href='{% static 'css/style.css' %}' type='text/css' media='all'/>
     <link rel='stylesheet' id='font-awesome-css' href='{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}' type='text/css' media='all'/>
+    <link rel="stylesheet" id="wppay-css" href="{% static 'css/pay.css' %}" type="text/css" media="all">
     {% block top-file %}
     {% endblock top-file %}
     <link rel="stylesheet" href="{% static 'highlights/github.css' %}">
@@ -161,6 +162,7 @@
     <script>
         var _hmt = _hmt || [];(function() {var hm = document.createElement("script");hm.src = "https://hm.baidu.com/hm.js?6c8d034cb7507cbc41c914d12c277ac6";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm, s);})();
     </script>
+    <script type="text/javascript" src="{% static 'js/popup.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
     {% if user.is_authenticated %}
     <script>
@@ -175,88 +177,88 @@
 </head>
 
 <body class="home blog">
-
-<header id="header" class="header">
-    <div class="container-inner">
-        <!--头部-->
-        <div class="yusi-logo">
-            <a href="/">
-                <h1>
-                    <span class="yusi-mono" id="title-desktop">ICanBe</span>
-                    <span class="yusi-bloger">– devezhang的个人博客</span>
-                </h1>
-            </a>
+    <header id="header" class="header">
+        <div class="container-inner">
+            <!--头部-->
+            <div class="yusi-logo">
+                <a href="/">
+                    <h1>
+                        <span class="yusi-mono" id="title-desktop">欲思</span>
+                        <span class="yusi-bloger">– devezhang的个人主页</span>
+                    </h1>
+                </a>
+            </div>
         </div>
-    </div>
-    <!--导航条-->
-    <div id="nav-header" class="navbar">
-        <ul class="nav" style="width: 100%">
-            <!--获取一级分类信息-->
-            {% get_bigcategory_list as bigcategory %}
-            <li id="menu-item-44"
-                class="menu-item menu-item-type-custom menu-item-object-custom {% if not category %}current-menu-item current_page_item{% endif %} menu-item-home menu-item-44"><a
-                    href="/"><i class="fa fa-home"></i>首页</a></li>
+        <!--导航条-->
+        <div id="nav-header" class="navbar">
+            <ul class="nav" style="width: 100%">
+                <!--获取一级分类信息-->
+                {% get_bigcategory_list as bigcategory %}
+                <li id="menu-item-44"
+                    class="menu-item menu-item-type-custom menu-item-object-custom {% if not category %}current-menu-item current_page_item{% endif %} menu-item-home menu-item-44"><a
+                        href="/"><i class="fa fa-home"></i>首页</a></li>
 
-            <!--导航条一级分类渲染-->
-            {% for big in bigcategory %}
+                <!--导航条一级分类渲染-->
+                {% for big in bigcategory %}
 
-                <!--获取二级分类信息-->
-                {% get_category_list big.id as cate %}
+                    <!--获取二级分类信息-->
+                    {% get_category_list big.id as cate %}
 
-                <!--如果一级分类下有二级分类则进行渲染-->
-                {% if cate %}
-                    <li id="menu-item-14" class="{% if category == big.slug %}current-menu-item {% endif %} menu-item-has-children">
-                        <a href="{% url 'blog:category' big.slug '' %}"><i class="fa fa-pencil"></i>{{ big.name }}</a>
-                        <div class="sub-menu">
-                            <ul>
+                    <!--如果一级分类下有二级分类则进行渲染-->
+                    {% if cate %}
+                        <li id="menu-item-14"
+                         class="menu-item menu-item-type-taxonomy menu-item-object-category {% if category == big.slug %}current-menu-item {% endif %} menu-item-has-children menu-item-14">
+                            <a href="{% url 'blog:category' big.slug '' %}"><i class="fa fa-pencil"></i>{{ big.name }}</a>
+                            <ul class="sub-menu">
                                 <!--导航条二级分类渲染-->
                                 {% for c in cate %}
                                         <li id="menu-item-19" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-19"><a href="{% url 'blog:category'  big.slug   c.slug  %}">{{ c.name }}</a></li>
                                 {% endfor %}
                             </ul>
+                        </li>
+
+                    <!--无二级分类的一级分类渲染-->
+                    {% else %}
+                        <li id="menu-item-851" class="menu-item menu-item-type-post_type menu-item-object-page {% if category == big.slug %}current-menu-item {% endif %} menu-item-851"><a href="{% url 'blog:category' big.slug '' %}"><i class="fa fa-comments-o"></i>{{ big.name }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                <!--导航条结束-->
+
+                <!--搜索框-->
+                <li style="float:right;">
+                    <div class="toggle-search"><i class="fa fa-search"></i></div>
+                    <div class="search-expand">
+                        <div class="search-expand-inner">
+                            <form class="nav-item navbar-form mr-2 py-md-2" role="search" method="get" id="searchform" action="{% url 'blog:search' %}">
+                                <div class="input-group">
+                                    <input type="search" name="q" class="search" placeholder="搜索" required=True>
+                                    <button class="search" type="submit" style="position: absolute;height: 30px"><i class="fa fa-search"></i></button>
+                                </div><!-- /input-group -->
+                            </form>
                         </div>
-                    </li>
-
-                <!--无二级分类的一级分类渲染-->
-                {% else %}
-                    <li id="menu-item-851"class="{% if category == big.slug %}current-menu-item {% endif %}"><a href="{% url 'blog:category' big.slug '' %}"><i class="fa fa-comments-o"></i>{{ big.name }}</a></li>
-                {% endif %}
-            {% endfor %}
-            <!--导航条结束-->
-
-            <!--搜索框-->
-            <li style="float:right;">
-                <div class="toggle-search"><i class="fa fa-search"></i></div>
-                <div class="search-expand">
-                    <div class="search-expand-inner">
-                        <form class="nav-item navbar-form mr-2 py-md-2" role="search" method="get" id="searchform" action="{% url 'blog:search' %}">
-                            <div class="input-group">
-                                <input type="search" name="q" class="search" placeholder="搜索" required=True>
-                                <button class="search" type="submit" style="position: absolute;height: 30px"><i class="fa fa-search"></i></button>
-                            </div><!-- /input-group -->
-                        </form>
                     </div>
-                </div>
-            </li>
-            <!--搜索框结束-->
+                </li>
+                <!--搜索框结束-->
 
-        </ul>
-    </div>
-    <!--导航条结束-->
-</header>
+            </ul>
+        </div>
+        <!--导航条结束-->
+    </header>
 
-<section class="container">
-
+    <section class="container">
+        <canvas id="spring-text" style="position:fixed;top:0;left:0;z-index:-1;"></canvas>
         <div class="speedbar" style="height: auto">
             <!--登录-->
             <!--目前登录功能只有注册登录其它没必要没做-->
             <div class="pull-right">
                 <!--TODO 登录改为弹出框-->
+
                 {% if request.session.username|default:'' == '' %}
-                        <i class="fa fa-power-off"></i>
-                        <a href="{% url 'accounts:login' %}?next={{ request.path }}">登录</a>
+                        <i class="fa fa-sign-in" aria-hidden="true"></i>
+                        <a href="{% url 'accounts:login' %}?next={{ request.path }}" etap="login_btn">登录</a>
+{#                        <a href="#" id="login_btn">登录</a>#}
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <i class="fa fa-user-plus"></i>
-                        <a href="{% url 'accounts:register' %}?next={{ request.path }}">注册</a>
+                        <a href="{% url 'accounts:register' %}?next={{ request.path }}" etap="register_btn">注册</a>
                 {% else %}
 
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-bell-o"></i>
@@ -327,7 +329,7 @@
 
 {#    <script type='text/javascript' src='{% static 'js/canvas.js' %}'></script>#}
 {#    <script type='text/javascript' src='{% static 'js/canvas_world.js' %}'></script>#}
-
+    <script type='text/javascript' src='{% static 'js/canvas_title.js' %}'></script>
     <script type="text/javascript" src="https://s23.cnzz.com/z_stat.php?id=1277808704&web_id=1277808704"></script>
     <!-- xuanfu -->
     <script type="text/javascript">
